@@ -1,0 +1,291 @@
+{
+  "info": {
+    "_postman_id": "nexhr-hrms-fullstack-collection-2026",
+    "name": "NexHR Autonomous HRMS Platform API",
+    "description": "Comprehensive REST API collection for NexHR AI-Driven HRMS including Authentication, Attendance, Leaves, Payroll Engine, AI Agent Chatbot, and Audit Integrity.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "preview_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Login as Employee (John Doe)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('token', jsonData.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@hrms.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"]}
+          }
+        },
+        {
+          "name": "Login as Super Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('token', jsonData.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hrms.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"]}
+          }
+        },
+        {
+          "name": "Get Current User Profile (/me)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/auth/me", "host": ["{{base_url}}"], "path": ["api", "auth", "me"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Employee Portal Endpoints",
+      "item": [
+        {
+          "name": "Get Employee Dashboard Profile",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/employee/profile", "host": ["{{base_url}}"], "path": ["api", "employee", "profile"]}
+          }
+        },
+        {
+          "name": "Punch In Attendance",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/employee/attendance/punch-in", "host": ["{{base_url}}"], "path": ["api", "employee", "attendance", "punch-in"]}
+          }
+        },
+        {
+          "name": "Punch Out Attendance",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/employee/attendance/punch-out", "host": ["{{base_url}}"], "path": ["api", "employee", "attendance", "punch-out"]}
+          }
+        },
+        {
+          "name": "Monthly Attendance Summary",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/employee/attendance/summary?month=10&year=2026", "host": ["{{base_url}}"], "path": ["api", "employee", "attendance", "summary"], "query": [{"key": "month", "value": "10"}, {"key": "year", "value": "2026"}]}
+          }
+        },
+        {
+          "name": "Apply for Leave",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leave_type\": \"SICK\",\n  \"start_date\": \"2026-11-28\",\n  \"end_date\": \"2026-11-29\",\n  \"reason\": \"Medical recovery\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/employee/leave/apply", "host": ["{{base_url}}"], "path": ["api", "employee", "leave", "apply"]}
+          }
+        },
+        {
+          "name": "Download PDF Payslip",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/employee/payslip/10/2026/pdf", "host": ["{{base_url}}"], "path": ["api", "employee", "payslip", "10", "2026", "pdf"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Super Admin Operations",
+      "item": [
+        {
+          "name": "Admin Dashboard Overview Stats",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/dashboard-stats", "host": ["{{base_url}}"], "path": ["api", "admin", "dashboard-stats"]}
+          }
+        },
+        {
+          "name": "List All Registered Employees",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/employees", "host": ["{{base_url}}"], "path": ["api", "admin", "employees"]}
+          }
+        },
+        {
+          "name": "Review Leave Request (Approve/Reject)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\",\n  \"admin_notes\": \"Approved via Postman suite\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/leaves/1/status", "host": ["{{base_url}}"], "path": ["api", "admin", "leaves", "1", "status"]}
+          }
+        },
+        {
+          "name": "Payroll Step 1: Generate Preview",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.preview_token) {",
+                  "    pm.collectionVariables.set('preview_token', jsonData.preview_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/payroll/preview?month=11&year=2026", "host": ["{{base_url}}"], "path": ["api", "admin", "payroll", "preview"], "query": [{"key": "month", "value": "11"}, {"key": "year", "value": "2026"}]}
+          }
+        },
+        {
+          "name": "Payroll Step 2: Confirm & Execute",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preview_token\": \"{{preview_token}}\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/payroll/execute", "host": ["{{base_url}}"], "path": ["api", "admin", "payroll", "execute"]}
+          }
+        },
+        {
+          "name": "AI Attendance Anomaly Radar Report",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/anomaly-report?month=10&year=2026", "host": ["{{base_url}}"], "path": ["api", "admin", "anomaly-report"], "query": [{"key": "month", "value": "10"}, {"key": "year", "value": "2026"}]}
+          }
+        },
+        {
+          "name": "Verify Cryptographic Audit Ledger",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/audit-logs/verify-integrity", "host": ["{{base_url}}"], "path": ["api", "admin", "audit-logs", "verify-integrity"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Autonomous AI Chatbot",
+      "item": [
+        {
+          "name": "Chatbot: Punch In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Mark my attendance for today\",\n  \"history\": []\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/chat", "host": ["{{base_url}}"], "path": ["api", "chat"]}
+          }
+        },
+        {
+          "name": "Chatbot: Check Leave Balance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"How many leaves do I have left?\",\n  \"history\": []\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/chat", "host": ["{{base_url}}"], "path": ["api", "chat"]}
+          }
+        },
+        {
+          "name": "Chatbot: Run Payroll Preview",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Run payroll for October 2026\",\n  \"history\": []\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/chat", "host": ["{{base_url}}"], "path": ["api", "chat"]}
+          }
+        }
+      ]
+    }
+  ]
+}
